@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Sekolah Ormawa PKU brand tokens, copied from the parent site
+   (sekolah-ormawa/src/app/globals.css). Royal Blue is the primary thread;
+   Bright Yellow is reserved for CTA / "you made it" moments so it stays a
+   highlight, not a wash. Exposed as Tailwind colors (bg-royal, text-ink…). */
+@theme {
+  --color-ink: #0b1220;
+  --color-ink-soft: #4b5875;
+  --color-paper: #f5f7fb;
+  --color-paper-light: #ffffff;
+  --color-paper-deep: #e7ecf7;
+  --color-royal: #0035ad;
+  --color-royal-dark: #00205b;
+  --color-sky: #307fe2;
+  --color-yellow: #f4e11b;
+  --color-sun: #f2a900;
+  --color-danger: #c81e3a;
+  --color-line: rgba(0, 32, 91, 0.13);
+  --color-line-strong: rgba(0, 32, 91, 0.28);
+
+  /* Same system font stacks as the parent site — no web font download. */
+  --font-display: "Century Gothic", Futura, "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Avenir Next", Avenir, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  --shadow-soft: 0 24px 60px rgba(0, 32, 91, 0.16);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-royal);
+  color: var(--color-paper-light);
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+}
+
+/* Yellow highlighter-marker from the parent site: one key word per
+   heading, never every word. */
+.hl {
+  position: relative;
+  z-index: 1;
+  padding: 0 0.07em;
+  font-style: normal;
+}
+
+.hl::after {
+  position: absolute;
+  z-index: -1;
+  right: -0.05em;
+  bottom: 0.1em;
+  left: -0.05em;
+  height: 0.32em;
+  transform: rotate(-1.5deg);
+  background: var(--color-yellow);
+  content: "";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
