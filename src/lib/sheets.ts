@@ -43,7 +43,8 @@ function findParticipantInRows(values: string[][], nim: string, division: string
   const headerRow = values[headerRowIndex];
   const namaCol = findColumn(headerRow, (cell) => cell.includes("nama"));
   const nimCol = findColumn(headerRow, (cell) => cell === "nim");
-  const hasilCol = findColumn(headerRow, (cell) => cell === "hasil");
+  // `includes` (not `===`) so variant headers like "HASIL SELEKSI" work too.
+  const hasilCol = findColumn(headerRow, (cell) => cell.includes("hasil"));
   if (namaCol === -1 || nimCol === -1 || hasilCol === -1) return { found: false };
 
   for (let i = headerRowIndex + 1; i < values.length; i++) {
@@ -142,6 +143,23 @@ async function fetchTabGids(spreadsheetId: string): Promise<Map<string, string>>
   return gids;
 }
 
+// Sheet tabs that use a descriptive name instead of a BIRDEP short name
+// (e.g. "Medbrand Legislatif" for Badan Media dan Branding legislatif) —
+// keyed by the sheet's tab name, pointing to the BIRDEP tab it belongs to.
+const TAB_ALIASES: Record<string, string> = {
+  "Medbrand Legislatif": "Badmedbrnd",
+};
+
+// Resolve a sheet tab name to its BIRDEP tab: exact alias first, then a
+// case-insensitive match on the BIRDEP short names (the committee writes
+// them uppercase in the sheet, e.g. SENBUD/KOMIT/ADKESMAH).
+function resolveBirdepTab(sheetName: string): string | undefined {
+  const aliased = TAB_ALIASES[sheetName];
+  if (aliased) return aliased;
+  const lower = sheetName.toLowerCase();
+  return BIRDEP.find(({ tab }) => tab.toLowerCase() === lower)?.tab;
+}
+
 export async function findParticipantByNim(rawNim: string): Promise<ParticipantLookup> {
   const nim = normalizeNim(rawNim);
   const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
@@ -152,10 +170,14 @@ export async function findParticipantByNim(rawNim: string): Promise<ParticipantL
 
   const gids = await fetchTabGids(spreadsheetId);
   // A Birdep whose tab hasn't been added to the sheet yet is skipped, not an
-  // error — results can be published Birdep by Birdep.
+  // error — results can be published Birdep by Birdep. A tab that exists but
+  // doesn't resolve to any BIRDEP (untitled placeholders like "Sheet1", a
+  // scratch tab) is also skipped.
   const tabs = BIRDEP.flatMap(({ tab }) => {
-    const gid = gids.get(tab);
-    return gid ? [{ tab, gid }] : [];
+    for (const [sheetName, gid] of gids) {
+      if (resolveBirdepTab(sheetName) === tab) return [{ tab, gid }];
+    }
+    return [];
   });
 
   const responses = await Promise.all(
