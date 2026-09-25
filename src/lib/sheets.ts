@@ -148,6 +148,9 @@ async function fetchTabGids(spreadsheetId: string): Promise<Map<string, string>>
 // keyed by the sheet's tab name, pointing to the BIRDEP tab it belongs to.
 const TAB_ALIASES: Record<string, string> = {
   "Medbrand Legislatif": "Badmedbrnd",
+  BINEKS: "Badintekst",
+  KOMANG: "Komanggar",
+  Legislasi: "Komleg",
 };
 
 // Resolve a sheet tab name to its BIRDEP tab: exact alias first, then a
