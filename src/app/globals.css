@@ -1,51 +1,62 @@
 @import "tailwindcss";
 
-/* Sekolah Ormawa PKU brand tokens, copied from the parent site
-   (sekolah-ormawa/src/app/globals.css). Royal Blue is the primary thread;
-   Bright Yellow is reserved for CTA / "you made it" moments so it stays a
-   highlight, not a wash. Exposed as Tailwind colors (bg-royal, text-ink…). */
+/* Sekolah Ormawa PKU brand tokens (from the parent site sekolah-ormawa),
+   set on a dark royal "stage" so the announcement feels like an event:
+   Royal Blue is the primary thread, Bright Yellow is reserved for CTAs and
+   the "you made it" moment so it stays a highlight, not a wash. */
 @theme {
+  --color-night: #020a1f;
+  --color-night-soft: #071a45;
+  --color-mist: #c3d1f0;
+  --color-mist-soft: #8a9cc4;
   --color-ink: #0b1220;
-  --color-ink-soft: #4b5875;
-  --color-paper: #f5f7fb;
   --color-paper-light: #ffffff;
-  --color-paper-deep: #e7ecf7;
   --color-royal: #0035ad;
   --color-royal-dark: #00205b;
   --color-sky: #307fe2;
+  --color-sky-soft: #8fb8ff;
   --color-yellow: #f4e11b;
   --color-sun: #f2a900;
-  --color-danger: #c81e3a;
-  --color-line: rgba(0, 32, 91, 0.13);
-  --color-line-strong: rgba(0, 32, 91, 0.28);
+  --color-danger: #ff7a8c;
+  --color-glass: rgba(255, 255, 255, 0.06);
+  --color-line: rgba(195, 209, 240, 0.14);
+  --color-line-strong: rgba(195, 209, 240, 0.28);
+  --color-wa: #25d366;
 
-  /* Same system font stacks as the parent site — no web font download. */
-  --font-display: "Century Gothic", Futura, "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-sans: "Avenir Next", Avenir, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --shadow-glass: 0 30px 80px -20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-cta: 0 14px 40px -8px rgba(244, 225, 27, 0.55);
+}
 
-  --shadow-soft: 0 24px 60px rgba(0, 32, 91, 0.16);
+/* next/font variable is set on <html>, so it has to be referenced inline. */
+@theme inline {
+  --font-sans: var(--font-jakarta), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-jakarta), -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
-  scroll-behavior: smooth;
+  background: var(--color-night);
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-night);
+  color: var(--color-paper-light);
   font-family: var(--font-sans);
   font-synthesis: none;
   overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--color-royal);
-  color: var(--color-paper-light);
+  background: var(--color-yellow);
+  color: var(--color-ink);
 }
 
 h1,
 h2 {
   font-family: var(--font-display);
+  text-wrap: balance;
 }
 
 /* Yellow highlighter-marker from the parent site: one key word per
@@ -55,25 +66,103 @@ h2 {
   z-index: 1;
   padding: 0 0.07em;
   font-style: normal;
+  color: inherit;
+  background: transparent;
 }
 
 .hl::after {
   position: absolute;
   z-index: -1;
   right: -0.05em;
-  bottom: 0.1em;
+  bottom: 0.08em;
   left: -0.05em;
-  height: 0.32em;
+  height: 0.34em;
   transform: rotate(-1.5deg);
   background: var(--color-yellow);
+  opacity: 0.9;
   content: "";
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+.hl-dark {
+  color: var(--color-ink);
+}
 
+.hl-dark::after {
+  height: 0.9em;
+  bottom: 0.02em;
+}
+
+.glass {
+  border: 1px solid var(--color-line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Shared primary button: yellow, the only saturated CTA on the page. */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.5rem;
+  border-radius: 9999px;
+  background: var(--color-yellow);
+  padding: 0 2rem;
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.btn-primary:hover {
+  background: #fff04d;
+  box-shadow: var(--shadow-cta);
+}
+
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible {
+  outline: 3px solid var(--color-sky-soft);
+  outline-offset: 4px;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-line-strong);
+  padding: 0 1.5rem;
+  color: var(--color-mist);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    border-color 0.3s;
+}
+
+.btn-ghost:hover {
+  border-color: var(--color-paper-light);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-paper-light);
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
